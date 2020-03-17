@@ -1,13 +1,10 @@
-install.packages("tidyverse")
-BOMdata <- csv_read("data/BOM_data.csv")
 library(tidyverse)
 BOMdata <- read_csv("data/BOM_data.csv")
 BOMstations <- read_csv("data/BOM_stations.csv")
 
+#Question 1
 #For each startion(BOM_data), how many days have a minimum temperature?
 #maximum temperature? and rainfall measurement?
-
-view(BOMdata)
 
 BOM_levels <- BOMdata %>%  
   separate(Temp_min_max, into = c('temp_min', 'temp_max'), sep = "/") %>%  
@@ -17,6 +14,10 @@ BOM_levels <- BOMdata %>%
 
 BOM_levels_result <- BOM_levels
 
+#Question 1 answer is BOM_levels_result, table output
+
+
+#Question 2
 #Which month saw the lowest, average, daily, temperature difference
 
 BOM_months <- BOMdata %>%  
@@ -32,5 +33,11 @@ BOM_month_mutate <- mutate(BOM_months, temp_diff = temp_max - temp_min)
   summarise(mean_temp_diff = mean(temp_diff)) %>% 
     arrange(mean_temp_diff)
   
+#The answer for question 2 is Month: June,6 and temp difference is 8.74
+
+#Question3
+#which state saw the lowest average daily temp difference
+  
+ #tip is to spread and then gather data or vice versa 
 
 

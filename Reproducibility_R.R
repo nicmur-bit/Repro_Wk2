@@ -12,7 +12,10 @@ view(BOMdata)
 BOM_levels <- BOMdata %>%  
   separate(Temp_min_max, into = c('temp_min', 'temp_max'), sep = "/") %>%  
   filter(temp_min != '-', temp_max != '-', Rainfall != '-') %>% 
-  group_by(temp_min, temp_max, Rainfall) 
-  
- 
+  group_by(Station_number) %>% 
+  summarise(n())
+
+view(BOM_levels)
+
+
   

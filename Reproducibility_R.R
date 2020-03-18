@@ -13,6 +13,8 @@ BOM_levels <- BOMdata %>%
   group_by(Station_number) %>% 
   summarise(n())
 
+#filter != (not equal to), values that don't equal '-' stay 
+
 BOM_levels_result <- BOM_levels
 
 #Question 1 answer is BOM_levels_result, table output
@@ -39,13 +41,25 @@ BOM_month_mutate <- mutate(BOM_months, temp_diff = temp_max - temp_min)
 #which state saw the lowest average daily temp difference
 
 station_long <- gather(BOMstations, key = 'Station_number', value = 'misc' , -info)
+
+#creates column named Station_number, column for misc (can be named anything), and
+#virtually excludes data from info column, so misc is populated from remaining spread
+#sheet and station_number comes from the info row
   
 station_spread <- spread(station_long, key = 'info' , value = 'misc')
 
+#spreads station_long table into columns from info column and values from misc column
+#in spread_long table
+
 station_tidy <- mutate(station_spread, Station_number = as.numeric(Station_number))
+
+#mutate changes the data from character to numeric
 
 BOM_levels <- BOMdata %>%  
   separate(Temp_min_max, into = c('temp_min', 'temp_max'), sep = "/")
+
+#this separates the data from temp_min_max column into two separate columns
+#with the data seaparated by / which separates the two numbers in the column
 
 BOM_combined <- left_join(BOM_levels, station_tidy)
 
@@ -65,5 +79,9 @@ Q_four_answer <- BOM_combined %>%
   filter(lon == max(lon) | lon == min(lon)) %>%
   group_by(Station_number, lon) %>% 
   summarise(average_solar_expousure = mean(Solar_exposure))
+
+#mutate changes the number from character to numeric so mean can be calculated later on
+#filter removes any NA values from the solar exposure numeric data
+#
 
 Q_four_answer

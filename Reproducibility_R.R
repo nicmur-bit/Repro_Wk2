@@ -82,6 +82,14 @@ Q_four_answer <- BOM_combined %>%
 
 #mutate changes the number from character to numeric so mean can be calculated later on
 #filter removes any NA values from the solar exposure numeric data
-#
 
-Q_four_answer
+#For the Perth station (ID 9225), produce three scatter plots showing the relationship between
+#the max temp and each other measurenment recorded - min temp, rainfall and solar exposure
+
+convert_Bom_combined <- BOM_combined %>% 
+  mutate(temp_min = as.numeric(temp_min), temp_max = as.numeric(temp_max), 
+         Rainfall = as.numeric(Rainfall), Solar_exposure = as.numeric (Solar_exposure) %>% 
+         filter(!is.na(temp_min), !is.na(temp_max), !is.na(Rainfall), !is.na(Solar_exposure))
+         
+Perth_station <- convert_Bom_combined %>% 
+  filter(9225)

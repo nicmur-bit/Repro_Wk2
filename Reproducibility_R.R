@@ -88,8 +88,70 @@ Q_four_answer <- BOM_combined %>%
 
 convert_Bom_combined <- BOM_combined %>% 
   mutate(temp_min = as.numeric(temp_min), temp_max = as.numeric(temp_max), 
-         Rainfall = as.numeric(Rainfall), Solar_exposure = as.numeric (Solar_exposure) %>% 
+         Rainfall = as.numeric(Rainfall), Solar_exposure = as.numeric (Solar_exposure)) %>% 
          filter(!is.na(temp_min), !is.na(temp_max), !is.na(Rainfall), !is.na(Solar_exposure))
          
-Perth_station <- convert_Bom_combined %>% 
-  filter(9225)
+station_ID9225 <- convert_Bom_combined %>% 
+  filter(Station_number == 9225)
+
+station_ID9225 %>% 
+  ggplot(aes(x = Rainfall, y = temp_max)) +
+  geom_point(colour = 'blue', alpha = 0.3)
+  
+station_ID9225 %>% 
+  ggplot(aes(x = temp_min, y = temp_max)) +
+  geom_point(colour = 'orange', alpha = 0.3)
+
+station_ID9225 %>% 
+  ggplot(aes(x = Solar_exposure, y = temp_max)) +
+  geom_point(colour = 'dark green', alpha = 0.3)
+
+#map Solar_exposure, temp_min, temp_max and rainfall onto one plot 
+  
+station_ID9225 %>% 
+  ggplot(aes(x = temp_min, y = temp_max, size = Rainfall, colour = Solar_exposure)) +
+  geom_point(colour = 'purple', alpha = 0.3)  
+
+#Combine all four plots onto one output
+
+library(cowplot)
+
+plot1 <-  station_ID9225 %>% 
+  ggplot(aes(x = Rainfall, y = temp_max)) +
+  geom_point(colour = 'blue', alpha = 0.3) +
+  labs(x = 'Rainfall',
+       y= 'Maximum temperature') +
+  theme_classic()
+
+plot2 <- station_ID9225 %>% 
+  ggplot(aes(x = temp_min, y = temp_max)) +
+  geom_point(colour = 'orange', alpha = 0.3) +
+  labs(x = 'Minimum temperature',
+       y = 'Maximum temperature') +
+  theme_classic()
+
+plot3 <- station_ID9225 %>% 
+  ggplot(aes(x = Solar_exposure, y = temp_max)) +
+  geom_point(colour = 'dark green', alpha = 0.3) +
+  labs(x = 'Solor Exposure',
+       y= 'Maximum temperature') +
+  theme_classic()
+
+plot4 <- station_ID9225 %>% 
+  ggplot(aes(x = temp_min, y = temp_max, size = Rainfall, colour = Solar_exposure)) +
+  geom_point(colour = 'purple', alpha = 0.3) +
+  labs(x = 'Minimum temperature',
+       y = 'Maximum temperature',
+       caption = "D = Combined affect of Maximum temperature for Rainfall, Minimum temperature and Solar exposure") +
+  theme_classic() 
+
+combined_plot <- plot_grid(plot1, plot2, plot3, plot4, rel_heights = c(2, 4), labels = 'AUTO') +
+  labs(title = "Relationship between temperature, solar exposure and rainfall for Perth Station - ID9225" )
+
+ggsave(filename = "results/combined_plot.png", plot = combined_plot,
+              width = 12, height = 10, dpi = 300, units = "cm")
+
+
+
+
+

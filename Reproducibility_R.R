@@ -151,7 +151,40 @@ combined_plot <- plot_grid(plot1, plot2, plot3, plot4, rel_heights = c(2, 4), la
 ggsave(filename = "results/combined_plot.png", plot = combined_plot,
               width = 12, height = 10, dpi = 300, units = "cm")
 
+#BOM challenge, question  4. Using entire BOM dataset, calculate average monthly rainfall for each station. 
+#Produce a lineplot to visualise this data and the state each station is in. 
+
+BOM_qfour <- BOM_combined %>% 
+  mutate(Rainfall = as.numeric(Rainfall)) %>% 
+  filter(!is.na(Rainfall)) 
+
+BOM_qfour_rain <- BOM_qfour %>% 
+  group_by(Station_number, state) %>% 
+  summarise(average_rainfall = mean(Rainfall)) %>% 
+  arrange(average_rainfall)
 
 
+#including joing Bom_data and BOM_station data sets
 
+BOM_rain <- BOMdata %>% 
+  mutate(Rainfall = as.numeric(Rainfall)) %>% 
+  filter(!is.na(Rainfall)) 
+
+station_long <- gather(BOMstations, key = 'Station_number', value = 'misc' , -info)
+
+station_spread <- spread(station_long, key = 'info' , value = 'misc')
+
+station_tidy <- mutate(station_spread, Station_number = as.numeric(Station_number))
+
+BOM_qfour_rain <- BOM_qfour %>% 
+  group_by(Station_number, state) %>% 
+  summarise(average_rainfall = mean(Rainfall)) %>% 
+  arrange(average_rainfall)
+
+BOM_join_state <- left_join(BOM_qfour_rain, station_tidy)
+
+BOM_join_state %>% 
+ggplot(aes(y = average_rainfall, x = Station_number, colour = state)) +
+    geom_line() +
+    facet_wrap(~ Station_number)
 

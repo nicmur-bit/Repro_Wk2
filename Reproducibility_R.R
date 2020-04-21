@@ -163,7 +163,7 @@ BOM_qfour_rain <- BOM_qfour %>%
   summarise(average_rainfall = mean(Rainfall)) %>% 
   arrange(average_rainfall)
 
-
+#Question 4, BOM challenge
 #including joing Bom_data and BOM_station data sets
 
 BOM_rain <- BOMdata %>% 
@@ -176,15 +176,27 @@ station_spread <- spread(station_long, key = 'info' , value = 'misc')
 
 station_tidy <- mutate(station_spread, Station_number = as.numeric(Station_number))
 
-BOM_qfour_rain <- BOM_qfour %>% 
-  group_by(Station_number, state) %>% 
+BOM_join_state <- left_join(BOM_rain, station_tidy)
+
+BOM_average_rain <- BOM_join_state %>% 
+  group_by(Station_number, state, Month) %>% 
   summarise(average_rainfall = mean(Rainfall)) %>% 
-  arrange(average_rainfall)
-
-BOM_join_state <- left_join(BOM_qfour_rain, station_tidy)
-
-BOM_join_state %>% 
-ggplot(aes(y = average_rainfall, x = Station_number, colour = state)) +
+  arrange(average_rainfall) %>% 
+ 
+BOM_plot_ave_rain_month <- BOM_average_rain %>% 
+    ggplot(aes(group = Station_number, y = average_rainfall, x = Month, colour = state)) +
     geom_line() +
-    facet_wrap(~ Station_number)
+    facet_wrap(~ state)
 
+BOM_plot_ave_rain_month + 
+  labs(
+    title = 'Montly average rainfall for stations in Australian states',
+    x = 'Month',
+    y = 'Average rainfall (mm)',
+    colour = 'States',
+    caption = 'Source: BOM data'
+  ) +
+  theme_bw() +
+  theme(
+    strip.background = element_blank()
+  )
